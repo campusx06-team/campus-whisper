@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Campus Whisper — Speak Freely, Stay Anonymous</title>
+<meta name="description" content="Campus Whisper — Anonymous campus social media. Safe, private, real.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════
+     PAGE: LOGIN
+═══════════════════════════════════════════ -->
+<div id="page-login" class="page active">
+  <div class="login-bg">
+    <div class="login-orb orb-a"></div>
+    <div class="login-orb orb-b"></div>
+    <div class="login-orb orb-c"></div>
+    <div class="login-grid-lines"></div>
+  </div>
+
+  <div class="login-wrapper">
+    <!-- Brand -->
+    <div class="brand-block">
+      <div class="brand-logo">
+        <img src="logo.png" alt="Campus Whisper Logo" class="logo-img">
+      </div>
+      <h1 class="brand-name">Campus Whisper</h1>
+      <p class="brand-tagline">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        Speak Freely, Stay Anonymous
+      </p>
+    </div>
+
+    <!-- Login Card -->
+    <div class="login-card">
+      <!-- Role Toggle -->
+      <div class="role-toggle" id="role-toggle">
+        <button class="role-btn active" data-role="student" id="btn-student-role">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+          Student
+        </button>
+        <button class="role-btn" data-role="admin" id="btn-admin-role">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          Admin
+        </button>
+        <div class="role-slider" id="role-slider"></div>
+      </div>
+
+      <!-- Step 1: Email -->
+      <div class="login-step active" id="step-email">
+        <h2 class="step-title">Welcome back 👋</h2>
+        <p class="step-sub" id="step-sub-text">Login with your college email</p>
+        <div class="input-group">
+          <svg class="input-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+          <input type="email" id="login-email" class="styled-input" placeholder="you@college.edu" autocomplete="email">
+        </div>
+        <div class="input-group" id="password-group" style="display:none;">
+          <svg class="input-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          <input type="password" id="login-password" class="styled-input" placeholder="Admin password">
+          <button class="eye-toggle" id="eye-toggle" type="button" tabindex="-1">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+          </button>
+        </div>
+        <button class="btn-login" id="btn-send-otp">
+          <span id="btn-login-text">Continue</span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </button>
+        <div class="login-hint">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+          <span>Student: <strong>student@college.edu</strong> | Admin: <strong>admin@campus.edu</strong> / <strong>admin123</strong></span>
+        </div>
+      </div>
+
+      <!-- Step 2: OTP -->
+      <div class="login-step" id="step-otp">
+        <button class="back-btn" id="btn-back-email">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+          Back
+        </button>
+        <h2 class="step-title">Check your inbox ✉️</h2>
+        <p class="step-sub">Code sent to <strong id="otp-email-display"></strong></p>
+        <div class="otp-inputs" id="otp-inputs">
+          <input type="text" maxlength="1" class="otp-box" data-index="0" inputmode="numeric">
+          <input type="text" maxlength="1" class="otp-box" data-index="1" inputmode="numeric">
+          <input type="text" maxlength="1" class="otp-box" data-index="2" inputmode="numeric">
+          <input type="text" maxlength="1" class="otp-box" data-index="3" inputmode="numeric">
+          <input type="text" maxlength="1" class="otp-box" data-index="4" inputmode="numeric">
+          <input type="text" maxlength="1" class="otp-box" data-index="5" inputmode="numeric">
+        </div>
+        <div class="otp-hint">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+          Demo code: <strong>123456</strong>
+        </div>
+        <button class="btn-login" id="btn-verify-otp">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4 12 14.01l-3-3"/></svg>
+          <span>Verify &amp; Enter</span>
+        </button>
+        <p class="resend-link">Didn't get it? <button id="btn-resend">Resend code</button></p>
+      </div>
+    </div>
+    <p class="login-footer-note">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      End-to-end anonymous. Your identity is never shared without consent.
+    </p>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     APP SHELL
+═══════════════════════════════════════════ -->
+<div id="page-app" class="page">
+
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="sb-logo">
+        <img src="logo.png" alt="Logo" class="sb-logo-img">
+        <span class="sb-brand">Campus Whisper</span>
+      </div>
+      <button class="sidebar-close" id="sidebar-close">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+
+    <!-- Student Nav -->
+    <nav class="sb-nav student-nav" id="student-nav">
+      <a href="#" class="sb-link active" data-view="feed">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        Feed
+      </a>
+      <a href="#" class="sb-link" data-view="create">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>
+        New Post
+      </a>
+      <a href="#" class="sb-link" data-view="polls">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        Polls
+      </a>
+      <a href="#" class="sb-link" data-view="qa">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        Q&amp;A
+      </a>
+      <a href="#" class="sb-link" data-view="notifs">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        Notifications
+        <span class="sb-badge" id="notif-badge">3</span>
+      </a>
+      <a href="#" class="sb-link" data-view="profile">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        My Posts
+      </a>
+    </nav>
+
+    <!-- Admin Nav -->
+    <nav class="sb-nav admin-nav" id="admin-nav" style="display:none;">
+      <a href="#" class="sb-link active" data-view="admin-dash">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        Dashboard
+      </a>
+      <a href="#" class="sb-link" data-view="admin-posts">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/></svg>
+        All Posts
+      </a>
+      <a href="#" class="sb-link" data-view="admin-flagged">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
+        Flagged
+        <span class="sb-badge danger" id="flag-badge">4</span>
+      </a>
+      <a href="#" class="sb-link" data-view="admin-users">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        Users
+      </a>
+      <a href="#" class="sb-link" data-view="admin-settings">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        Settings
+      </a>
+    </nav>
+
+    <div class="sb-footer">
+      <div class="sb-user-card">
+        <div class="sb-avatar" id="sb-avatar">👤</div>
+        <div class="sb-user-info">
+          <span class="sb-username" id="sb-username">Anonymous</span>
+          <span class="sb-role-tag" id="sb-role-tag">Student</span>
+        </div>
+      </div>
+      <div class="sb-actions">
+        <button class="sb-action-btn" id="theme-toggle" title="Toggle theme">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+        </button>
+        <button class="sb-action-btn logout-btn" id="btn-logout" title="Logout">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+  <!-- Main Content -->
+  <main class="main-content" id="main-content">
+
+    <!-- Top Bar -->
+    <header class="topbar" id="topbar">
+      <button class="hamburger" id="hamburger">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+      <h2 class="topbar-title" id="topbar-title">Feed</h2>
+      <div class="topbar-right">
+        <button class="tb-icon-btn" id="tb-notif-btn" title="Notifications">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          <span class="tb-badge" id="tb-notif-badge">3</span>
+        </button>
+        <button class="tb-icon-btn" id="tb-search-btn" title="Search">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- ── VIEW: Feed ── -->
+    <div class="view active" id="view-feed">
+      <div class="feed-search-bar" id="feed-search-wrap">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" id="feed-search" placeholder="Search whispers..." class="feed-search-input">
+        <button class="search-close-btn" id="search-close-btn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+
+      <!-- Updated Category Filters -->
+      <div class="feed-filters" id="feed-filters">
+        <button class="feed-filter active" data-filter="all">✨ All</button>
+        <button class="feed-filter" data-filter="trending">🔥 Trending</button>
+        <button class="feed-filter" data-filter="recent">🕐 Recent</button>
+        <button class="feed-filter" data-filter="top">⬆️ Top</button>
+        <button class="feed-filter" data-filter="rant">😤 Rant</button>
+        <button class="feed-filter" data-filter="love">❤️ Love</button>
+        <button class="feed-filter" data-filter="funny">😂 Funny</button>
+        <button class="feed-filter" data-filter="advice">💡 Advice</button>
+        <button class="feed-filter" data-filter="deep">🌊 Deep</button>
+      </div>
+
+      <div class="feed-list" id="feed-list">
+        <div class="skeleton-card"><div class="sk-header"></div><div class="sk-line long"></div><div class="sk-line med"></div><div class="sk-line short"></div><div class="sk-footer"></div></div>
+        <div class="skeleton-card"><div class="sk-header"></div><div class="sk-line long"></div><div class="sk-line med"></div><div class="sk-footer"></div></div>
+        <div class="skeleton-card"><div class="sk-header"></div><div class="sk-line long"></div><div class="sk-line short"></div><div class="sk-footer"></div></div>
+      </div>
+
+      <button class="fab" id="fab-post">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+      </button>
+    </div>
+
+    <!-- ── VIEW: Create Post ── -->
+    <div class="view" id="view-create">
+      <div class="create-container">
+        <div class="create-card">
+          <div class="create-header">
+            <div class="anon-badge">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+              Posting Anonymously
+            </div>
+            <h2 class="create-title">New Whisper</h2>
+            <p class="create-sub">Your identity will never be revealed publicly</p>
+          </div>
+
+          <!-- Post Type Tabs -->
+          <div class="post-type-tabs">
+            <button class="post-type-tab active" data-type="text">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>
+              Text Post
+            </button>
+            <button class="post-type-tab" data-type="poll">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+              Poll
+            </button>
+            <button class="post-type-tab" data-type="question">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+              Ask a Question
+            </button>
+          </div>
+
+          <!-- TEXT POST FORM -->
+          <form id="create-form-text" class="post-form active-form">
+            <div class="tag-selector-row">
+              <label class="create-label">Category</label>
+              <div class="tag-pills">
+                <label class="tag-pill"><input type="radio" name="post-tag" value="love" required><span>❤️ Love</span></label>
+                <label class="tag-pill"><input type="radio" name="post-tag" value="funny"><span>😂 Funny</span></label>
+                <label class="tag-pill"><input type="radio" name="post-tag" value="rant"><span>😤 Rant</span></label>
+                <label class="tag-pill"><input type="radio" name="post-tag" value="advice"><span>💡 Advice</span></label>
+                <label class="tag-pill"><input type="radio" name="post-tag" value="deep"><span>🌊 Deep</span></label>
+              </div>
+            </div>
+            <div class="create-field">
+              <label class="create-label">Your Whisper</label>
+              <textarea id="post-text" class="post-textarea" placeholder="What's on your mind? Share it anonymously..." maxlength="500" rows="5"></textarea>
+              <div class="char-bar"><div class="char-bar-fill" id="char-bar-fill"></div></div>
+              <span class="char-count-label"><span id="post-char-count">0</span>/500</span>
+            </div>
+            <div class="create-field">
+              <label class="create-label">Image (optional)</label>
+              <div class="image-drop" id="image-drop">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                <p>Drop image here or <span>browse</span></p>
+                <input type="file" id="image-input" accept="image/*" style="display:none;">
+              </div>
+              <div class="image-preview-wrap" id="image-preview-wrap" style="display:none;">
+                <img id="image-preview" src="" alt="Preview">
+                <button type="button" class="remove-image" id="remove-image">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+                </button>
+              </div>
+            </div>
+            <div class="guideline-box">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+              <div><strong>Community Guidelines</strong><p>No hate speech, harassment, or personal info. Violations may result in identity reveal to admin.</p></div>
+            </div>
+            <button type="submit" class="btn-post-submit" id="btn-submit-text">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"/></svg>
+              Post Anonymously
+            </button>
+          </form>
+
+          <!-- POLL FORM -->
+          <form id="create-form-poll" class="post-form" style="display:none;">
+            <div class="create-field">
+              <label class="create-label">Poll Question</label>
+              <input type="text" id="poll-question" class="styled-input poll-question-input" placeholder="Ask the campus something...">
+            </div>
+            <div class="create-field">
+              <label class="create-label">Options</label>
+              <div id="poll-options-list">
+                <div class="poll-option-input-row">
+                  <span class="poll-opt-letter">A</span>
+                  <input type="text" class="poll-opt-input" placeholder="Option A" maxlength="80">
+                </div>
+                <div class="poll-option-input-row">
+                  <span class="poll-opt-letter">B</span>
+                  <input type="text" class="poll-opt-input" placeholder="Option B" maxlength="80">
+                </div>
+                <div class="poll-option-input-row">
+                  <span class="poll-opt-letter">C</span>
+                  <input type="text" class="poll-opt-input" placeholder="Option C (optional)" maxlength="80">
+                </div>
+                <div class="poll-option-input-row">
+                  <span class="poll-opt-letter">D</span>
+                  <input type="text" class="poll-opt-input" placeholder="Option D (optional)" maxlength="80">
+                </div>
+              </div>
+            </div>
+            <div class="create-field">
+              <label class="create-label">Duration</label>
+              <div class="poll-duration-pills">
+                <label class="poll-dur-pill"><input type="radio" name="poll-duration" value="1h"><span>1 Hour</span></label>
+                <label class="poll-dur-pill"><input type="radio" name="poll-duration" value="6h" checked><span>6 Hours</span></label>
+                <label class="poll-dur-pill"><input type="radio" name="poll-duration" value="24h"><span>24 Hours</span></label>
+                <label class="poll-dur-pill"><input type="radio" name="poll-duration" value="3d"><span>3 Days</span></label>
+              </div>
+            </div>
+            <div class="guideline-box">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/></svg>
+              <div><strong>Anonymous Poll</strong><p>Votes are anonymous. Results visible to all campus members.</p></div>
+            </div>
+            <button type="submit" class="btn-post-submit" id="btn-submit-poll">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+              Launch Poll
+            </button>
+          </form>
+
+          <!-- QUESTION FORM -->
+          <form id="create-form-question" class="post-form" style="display:none;">
+            <div class="create-field">
+              <label class="create-label">Your Question</label>
+              <textarea id="qa-question" class="post-textarea" placeholder="Ask anything to your campus community anonymously..." maxlength="300" rows="4"></textarea>
+              <div class="char-bar"><div class="char-bar-fill" id="qa-char-bar-fill"></div></div>
+              <span class="char-count-label"><span id="qa-char-count">0</span>/300</span>
+            </div>
+            <div class="tag-selector-row">
+              <label class="create-label">Category</label>
+              <div class="tag-pills">
+                <label class="tag-pill"><input type="radio" name="qa-tag" value="academics" required><span>📚 Academics</span></label>
+                <label class="tag-pill"><input type="radio" name="qa-tag" value="social"><span>🎉 Social</span></label>
+                <label class="tag-pill"><input type="radio" name="qa-tag" value="campus"><span>🏫 Campus</span></label>
+                <label class="tag-pill"><input type="radio" name="qa-tag" value="career"><span>💼 Career</span></label>
+                <label class="tag-pill"><input type="radio" name="qa-tag" value="misc"><span>🌀 Misc</span></label>
+              </div>
+            </div>
+            <div class="guideline-box">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+              <div><strong>Q&amp;A</strong><p>Answers are anonymous. Anyone in campus can reply.</p></div>
+            </div>
+            <button type="submit" class="btn-post-submit" id="btn-submit-question">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/></svg>
+              Ask Anonymously
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── VIEW: Polls ── -->
+    <div class="view" id="view-polls">
+      <div class="polls-container">
+        <div class="polls-header-row">
+          <div>
+            <h3 class="section-view-title">📊 Campus Polls</h3>
+            <p class="section-view-sub">Vote anonymously. See what campus thinks.</p>
+          </div>
+          <button class="btn-create-poll" id="btn-create-poll">+ Create Poll</button>
+        </div>
+        <div class="polls-list" id="polls-list"><!-- injected --></div>
+      </div>
+    </div>
+
+    <!-- ── VIEW: Q&A ── -->
+    <div class="view" id="view-qa">
+      <div class="qa-container">
+        <div class="polls-header-row">
+          <div>
+            <h3 class="section-view-title">❓ Q&amp;A Board</h3>
+            <p class="section-view-sub">Ask questions, get anonymous answers.</p>
+          </div>
+          <button class="btn-create-poll" id="btn-ask-question">+ Ask a Question</button>
+        </div>
+        <div class="qa-list" id="qa-list"><!-- injected --></div>
+      </div>
+    </div>
+
+    <!-- ── VIEW: Notifications ── -->
+    <div class="view" id="view-notifs">
+      <div class="notifs-container">
+        <div class="notifs-header-row">
+          <h3>Notifications</h3>
+          <button class="mark-all-read" id="mark-all-read">Mark all read</button>
+        </div>
+        <div class="notifs-list" id="notifs-list"></div>
+      </div>
+    </div>
+
+    <!-- ── VIEW: My Posts ── -->
+    <div class="view" id="view-profile">
+      <div class="profile-container">
+        <div class="anon-profile-card">
+          <div class="anon-avatar-big">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+          </div>
+          <h3>Your Anonymous Profile</h3>
+          <p>All your posts appear anonymously. Only admins can see your identity if your posts are flagged.</p>
+          <div class="profile-stats-row">
+            <div class="profile-stat"><span class="pstat-num" id="my-post-count">0</span><span class="pstat-label">Posts</span></div>
+            <div class="profile-stat"><span class="pstat-num" id="my-like-count">0</span><span class="pstat-label">Likes</span></div>
+            <div class="profile-stat"><span class="pstat-num" id="my-poll-count">0</span><span class="pstat-label">Polls</span></div>
+          </div>
+        </div>
+        <div class="my-posts-list" id="my-posts-list"></div>
+      </div>
+    </div>
+
+    <!-- ════ ADMIN VIEWS ════ -->
+    <div class="view" id="view-admin-dash">
+      <div class="admin-container">
+        <div class="admin-welcome">
+          <div>
+            <h2 class="admin-welcome-title">Admin Dashboard</h2>
+            <p class="admin-welcome-sub">Monitor campus activity, review flagged content, and keep the community safe.</p>
+          </div>
+          <div class="admin-shield">
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          </div>
+        </div>
+        <div class="stat-cards" id="admin-stat-cards">
+          <div class="stat-card purple"><div class="stat-card-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/></svg></div><div class="stat-card-info"><span class="stat-card-num" id="sc-total">12</span><span class="stat-card-label">Total Posts</span></div><div class="stat-card-trend up">+3 today</div></div>
+          <div class="stat-card red"><div class="stat-card-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg></div><div class="stat-card-info"><span class="stat-card-num" id="sc-flagged">4</span><span class="stat-card-label">Flagged Posts</span></div><div class="stat-card-trend up">Needs review</div></div>
+          <div class="stat-card cyan"><div class="stat-card-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div><div class="stat-card-info"><span class="stat-card-num" id="sc-users">48</span><span class="stat-card-label">Active Users</span></div><div class="stat-card-trend up">+12 this week</div></div>
+          <div class="stat-card green"><div class="stat-card-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4 12 14.01l-3-3"/></svg></div><div class="stat-card-info"><span class="stat-card-num" id="sc-resolved">28</span><span class="stat-card-label">Resolved</span></div><div class="stat-card-trend up">+5 this week</div></div>
+        </div>
+        <div class="admin-section">
+          <div class="admin-section-header"><h3>Recent Flagged Posts</h3><button class="view-all-btn" data-view="admin-flagged">View All</button></div>
+          <div id="admin-dash-flagged"></div>
+        </div>
+        <div class="admin-section">
+          <div class="admin-section-header"><h3>Post Activity (This Week)</h3></div>
+          <div class="activity-chart"><div class="chart-bars" id="chart-bars"></div><div class="chart-labels" id="chart-labels"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="view" id="view-admin-posts">
+      <div class="admin-container">
+        <div class="admin-table-header"><h3>All Posts</h3><div class="table-search"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input type="text" id="admin-search" placeholder="Search posts..."></div></div>
+        <div class="admin-table-wrap"><table class="admin-table" id="admin-posts-table"><thead><tr><th>#</th><th>Content</th><th>Type</th><th>Category</th><th>Status</th><th>Likes</th><th>Date</th><th>Actions</th></tr></thead><tbody id="admin-posts-tbody"></tbody></table></div>
+      </div>
+    </div>
+
+    <div class="view" id="view-admin-flagged">
+      <div class="admin-container">
+        <div class="admin-section-header"><h3>🚩 Flagged Posts</h3><span class="flagged-count-label" id="flagged-count-label">4 need review</span></div>
+        <div id="flagged-list"></div>
+      </div>
+    </div>
+
+    <div class="view" id="view-admin-users">
+      <div class="admin-container">
+        <h3 class="admin-section-title">Registered Users</h3>
+        <div class="admin-table-wrap"><table class="admin-table"><thead><tr><th>#</th><th>User</th><th>Posts</th><th>Joined</th><th>Status</th><th>Actions</th></tr></thead><tbody id="users-tbody"></tbody></table></div>
+      </div>
+    </div>
+
+    <div class="view" id="view-admin-settings">
+      <div class="admin-container">
+        <div class="settings-card">
+          <h3>Platform Settings</h3>
+          <div class="setting-row"><div><strong>Require OTP Verification</strong><p>Students must verify email with OTP before posting</p></div><label class="toggle-switch"><input type="checkbox" checked><span class="toggle-slider"></span></label></div>
+          <div class="setting-row"><div><strong>Auto-Moderate with AI</strong><p>Automatically flag potentially harmful content</p></div><label class="toggle-switch"><input type="checkbox" checked><span class="toggle-slider"></span></label></div>
+          <div class="setting-row"><div><strong>Allow Polls &amp; Q&amp;A</strong><p>Let students create polls and ask questions</p></div><label class="toggle-switch"><input type="checkbox" checked><span class="toggle-slider"></span></label></div>
+          <div class="setting-row"><div><strong>Image Uploads</strong><p>Allow students to upload images with posts</p></div><label class="toggle-switch"><input type="checkbox" checked><span class="toggle-slider"></span></label></div>
+          <div class="setting-row"><div><strong>Maintenance Mode</strong><p>Temporarily disable public access</p></div><label class="toggle-switch"><input type="checkbox"><span class="toggle-slider"></span></label></div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     GLOBAL MODALS
+═══════════════════════════════════════════ -->
+
+<!-- Reveal Identity Modal -->
+<div class="modal-overlay" id="reveal-modal">
+  <div class="modal reveal-modal-box">
+    <div class="modal-icon warn"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+    <h3>Reveal Poster Identity</h3>
+    <p>This reveals the anonymous identity of this post's author. Only for serious policy violations.</p>
+    <div class="reveal-identity-box">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      <div><strong id="reveal-name">—</strong><span id="reveal-email">—</span></div>
+    </div>
+    <div class="modal-actions">
+      <button class="modal-btn cancel" id="reveal-cancel">Cancel</button>
+      <button class="modal-btn danger" id="reveal-confirm">Confirm Reveal</button>
+    </div>
+  </div>
+</div>
+
+<!-- Comment Modal -->
+<div class="modal-overlay" id="comment-modal">
+  <div class="modal comment-modal-box">
+    <div class="modal-header-row">
+      <h3>Comments</h3>
+      <button class="modal-close-x" id="comment-close"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+    </div>
+    <div class="comment-post-preview" id="comment-post-preview"></div>
+    <div class="comments-list" id="comments-list"></div>
+    <div class="comment-input-row">
+      <input type="text" id="comment-input" placeholder="Add a comment anonymously..." class="comment-input">
+      <button class="comment-submit" id="comment-submit"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"/></svg></button>
+    </div>
+  </div>
+</div>
+
+<!-- Answer Q&A Modal -->
+<div class="modal-overlay" id="answer-modal">
+  <div class="modal comment-modal-box">
+    <div class="modal-header-row">
+      <h3>Answers</h3>
+      <button class="modal-close-x" id="answer-close"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+    </div>
+    <div class="comment-post-preview" id="answer-question-preview"></div>
+    <div class="comments-list" id="answers-list"></div>
+    <div class="comment-input-row">
+      <input type="text" id="answer-input" placeholder="Answer anonymously..." class="comment-input">
+      <button class="comment-submit" id="answer-submit"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"/></svg></button>
+    </div>
+  </div>
+</div>
+
+<!-- Report Modal -->
+<div class="modal-overlay" id="report-modal">
+  <div class="modal report-modal-box">
+    <div class="modal-icon warn"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg></div>
+    <h3>Report Post</h3>
+    <p>Why are you reporting this post?</p>
+    <div class="report-reasons">
+      <label class="report-reason"><input type="radio" name="report-reason" value="hate"> Hate Speech / Harassment</label>
+      <label class="report-reason"><input type="radio" name="report-reason" value="spam"> Spam / Misinformation</label>
+      <label class="report-reason"><input type="radio" name="report-reason" value="personal"> Personal Info Shared</label>
+      <label class="report-reason"><input type="radio" name="report-reason" value="inappropriate"> Inappropriate Content</label>
+      <label class="report-reason"><input type="radio" name="report-reason" value="other"> Other</label>
+    </div>
+    <div class="modal-actions">
+      <button class="modal-btn cancel" id="report-cancel">Cancel</button>
+      <button class="modal-btn danger" id="report-confirm">Submit Report</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast-container" id="toast-container"></div>
+<script src="script.js"></script>
+</body>
+</html>
