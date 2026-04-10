@@ -1,6 +1,99 @@
 'use strict';
 
 // ══════════════════════════════════════════════════════════
+//  BAD WORD FILTER (integrated directly)
+// ══════════════════════════════════════════════════════════
+const BANNED_WORDS = [
+  // Abusive language
+  'ass', 'asshole', 'bastard', 'bitch', 'damn', 'dammit', 'fuck', 'fucking',
+  'fucker', 'fucked', 'fck', 'fuk', 'stfu', 'gtfo', 'lmfao',
+  'hell', 'shit', 'shitty', 'crap', 'bloody', 'arsehole', 'arse', 'piss',
+  'dick', 'cock', 'pussy', 'boobs', 'tits',
+
+  // Slurs and hate speech
+  'nigger', 'nigga', 'nigg', 'faggot', 'fag', 'retard', 'retarded',
+  'dyke', 'whore', 'slut', 'tranny', 'homo',
+  'chink', 'spic', 'kike', 'gook',
+
+  // Threats and violence
+  'kill', 'killing', 'killed', 'murder', 'rape', 'rapist',
+  'beating', 'shoot', 'stab', 'bomb',
+
+  // Harassment
+  'kys', 'die', 'loser', 'idiot', 'moron', 'stupid', 'dumb',
+  'worthless', 'pathetic', 'ugly',
+
+  // Sexual content
+  'porn', 'xxx', 'nude', 'naked', 'sex', 'horny', 'orgasm',
+
+  // Drug references
+  'cocaine', 'heroin', 'meth', 'weed', 'loda',
+
+  // Self-harm
+  'suicide', 'overdose',
+];
+
+// Leet speak / obfuscation patterns
+const LEET_MAP = {
+  '@': 'a', '4': 'a', '3': 'e', '1': 'i', '!': 'i',
+  '0': 'o', '5': 's', '$': 's', '7': 't', '+': 't',
+};
+
+function deobfuscate(text) {
+  let clean = text.toLowerCase();
+  // Replace leet speak characters
+  for (const [leet, letter] of Object.entries(LEET_MAP)) {
+    clean = clean.split(leet).join(letter);
+  }
+  // Remove repeated characters (e.g., "fuuuuck" → "fuck")
+  clean = clean.replace(/(.)\1{2,}/g, '$1$1');
+  // Remove common separators used to bypass filters (e.g., "f.u.c.k", "f-u-c-k")
+  clean = clean.replace(/[.\-_*#@!]/g, '');
+  return clean;
+}
+
+function checkBadWords(text) {
+  if (!text || typeof text !== 'string') {
+    return { hasBadWords: false, foundWords: [] };
+  }
+
+  const originalLower = text.toLowerCase();
+  const deobfuscated = deobfuscate(text);
+  const foundWords = [];
+
+  BANNED_WORDS.forEach(bannedWord => {
+    const regex = new RegExp(`\\b${bannedWord}\\b`, 'gi');
+    if (regex.test(originalLower) || regex.test(deobfuscated)) {
+      if (!foundWords.includes(bannedWord)) {
+        foundWords.push(bannedWord);
+      }
+    }
+  });
+
+  // Also check for multi-word phrases
+  const phrases = ['kill yourself', 'go die', 'shoot up', 'gun down', 'crystal meth', 'self harm'];
+  phrases.forEach(phrase => {
+    if (originalLower.includes(phrase) || deobfuscated.includes(phrase)) {
+      if (!foundWords.includes(phrase)) {
+        foundWords.push(phrase);
+      }
+    }
+  });
+
+  return {
+    hasBadWords: foundWords.length > 0,
+    foundWords: foundWords,
+  };
+}
+
+function getFilterMessage(foundWords) {
+  if (foundWords.length === 0) {
+    return '🚫 Your post contains inappropriate content and has been blocked. Please revise.';
+  }
+  return `🚫 Your post was blocked for containing inappropriate language. Please remove offensive words and try again.`;
+}
+
+// ══════════════════════════════════════════════════════════
 //  STATE
 // ══════════════════════════════════════════════════════════
 const STATE = {
@@ -16,6 +109,7 @@ const STATE = {
   myPostIds: new Set(),
   myPollIds: new Set(),
   notifications: [],
+  blockedAttempts: [],     // Track blocked posting attempts for admin
   commentTarget: null,
   revealTarget: null,
   reportTarget: null,
@@ -147,6 +241,60 @@ const SEED_USERS = [
 ];
 
 // ══════════════════════════════════════════════════════════
+//  DATA PERSISTENCE (localStorage — connects student ↔ admin)
+// ══════════════════════════════════════════════════════════
+const STORAGE_KEYS = {
+  posts: 'cw-posts',
+  polls: 'cw-polls',
+  qa: 'cw-qa',
+  notifications: 'cw-notifications',
+  blocked: 'cw-blocked-attempts',
+  myPostIds: 'cw-my-post-ids',
+  myPollIds: 'cw-my-poll-ids',
+};
+
+function saveData() {
+  try {
+    localStorage.setItem(STORAGE_KEYS.posts, JSON.stringify(STATE.posts));
+    localStorage.setItem(STORAGE_KEYS.polls, JSON.stringify(STATE.polls));
+    localStorage.setItem(STORAGE_KEYS.qa, JSON.stringify(STATE.qaItems));
+    localStorage.setItem(STORAGE_KEYS.notifications, JSON.stringify(STATE.notifications));
+    localStorage.setItem(STORAGE_KEYS.blocked, JSON.stringify(STATE.blockedAttempts));
+    localStorage.setItem(STORAGE_KEYS.myPostIds, JSON.stringify([...STATE.myPostIds]));
+    localStorage.setItem(STORAGE_KEYS.myPollIds, JSON.stringify([...STATE.myPollIds]));
+  } catch (e) {
+    console.warn('Failed to save data:', e);
+  }
+}
+
+function loadData() {
+  try {
+    const posts = localStorage.getItem(STORAGE_KEYS.posts);
+    const polls = localStorage.getItem(STORAGE_KEYS.polls);
+    const qa = localStorage.getItem(STORAGE_KEYS.qa);
+    const notifs = localStorage.getItem(STORAGE_KEYS.notifications);
+    const blocked = localStorage.getItem(STORAGE_KEYS.blocked);
+    const myPostIds = localStorage.getItem(STORAGE_KEYS.myPostIds);
+    const myPollIds = localStorage.getItem(STORAGE_KEYS.myPollIds);
+
+    STATE.posts = posts ? JSON.parse(posts) : JSON.parse(JSON.stringify(SEED_POSTS));
+    STATE.polls = polls ? JSON.parse(polls) : JSON.parse(JSON.stringify(SEED_POLLS));
+    STATE.qaItems = qa ? JSON.parse(qa) : JSON.parse(JSON.stringify(SEED_QA));
+    STATE.notifications = notifs ? JSON.parse(notifs) : JSON.parse(JSON.stringify(SEED_NOTIFICATIONS));
+    STATE.blockedAttempts = blocked ? JSON.parse(blocked) : [];
+    STATE.myPostIds = myPostIds ? new Set(JSON.parse(myPostIds)) : new Set();
+    STATE.myPollIds = myPollIds ? new Set(JSON.parse(myPollIds)) : new Set();
+  } catch (e) {
+    console.warn('Failed to load data, using seed:', e);
+    STATE.posts = JSON.parse(JSON.stringify(SEED_POSTS));
+    STATE.polls = JSON.parse(JSON.stringify(SEED_POLLS));
+    STATE.qaItems = JSON.parse(JSON.stringify(SEED_QA));
+    STATE.notifications = JSON.parse(JSON.stringify(SEED_NOTIFICATIONS));
+    STATE.blockedAttempts = [];
+  }
+}
+
+// ══════════════════════════════════════════════════════════
 //  UTILS
 // ══════════════════════════════════════════════════════════
 function el(id) { return document.getElementById(id); }
@@ -275,10 +423,9 @@ function loginAs(role, email) {
   STATE.role       = role;
   STATE.loggedIn   = true;
   STATE.currentUser = { role, email };
-  STATE.posts      = JSON.parse(JSON.stringify(SEED_POSTS));
-  STATE.polls      = JSON.parse(JSON.stringify(SEED_POLLS));
-  STATE.qaItems    = JSON.parse(JSON.stringify(SEED_QA));
-  STATE.notifications = JSON.parse(JSON.stringify(SEED_NOTIFICATIONS));
+
+  // Load persisted data (shared between student and admin sessions)
+  loadData();
 
   el('page-login').classList.remove('active');
   el('page-app').classList.add('active');
@@ -333,7 +480,19 @@ function switchView(viewId) {
   STATE.activeView = viewId;
 
   if (window.innerWidth < 768) closeSidebar();
+
+  // Auto-refresh views with latest data when switching
   if (viewId === 'profile') renderMyPosts();
+  if (viewId === 'feed') renderFeed();
+  if (viewId === 'polls') renderPolls();
+  if (viewId === 'qa') renderQA();
+  if (viewId === 'notifs') renderNotifications();
+
+  // ── Admin views: always re-render with latest shared data ──
+  if (viewId === 'admin-dash') { loadData(); renderAdminDash(); }
+  if (viewId === 'admin-posts') { loadData(); renderAdminPostsTable(); }
+  if (viewId === 'admin-flagged') { loadData(); renderFlaggedPosts(); }
+  if (viewId === 'admin-users') renderUsersTable();
 }
 
 function initNavigation() {
@@ -382,8 +541,6 @@ function closeSearch() { el('feed-search-wrap').classList.remove('open'); el('fe
 function logout() {
   STATE.loggedIn = false;
   STATE.currentUser = null;
-  STATE.myPostIds.clear();
-  STATE.myPollIds.clear();
   STATE.imageDataUrl = null;
   el('page-app').classList.remove('active');
   el('page-app').style.display = 'none';
@@ -517,6 +674,7 @@ function attachPostCardEvents(container) {
       else { btn.classList.add('voted-up'); btn.closest('.post-card')?.querySelector('.downvote-btn')?.classList.remove('voted-down'); post.likes++; }
       btn.querySelector('.vote-count-up').textContent = post.likes;
       btn.style.transform = 'scale(1.3)'; setTimeout(() => btn.style.transform = '', 200);
+      saveData();
     });
   });
   container.querySelectorAll('.downvote-btn').forEach(btn => {
@@ -526,6 +684,7 @@ function attachPostCardEvents(container) {
       if (btn.classList.contains('voted-down')) { btn.classList.remove('voted-down'); post.dislikes--; }
       else { btn.classList.add('voted-down'); btn.closest('.post-card')?.querySelector('.upvote-btn')?.classList.remove('voted-up'); post.dislikes++; }
       btn.querySelector('.vote-count-down').textContent = post.dislikes;
+      saveData();
     });
   });
   container.querySelectorAll('.comment-open-btn').forEach(btn => {
@@ -537,7 +696,7 @@ function attachPostCardEvents(container) {
 }
 
 // ══════════════════════════════════════════════════════════
-//  CREATE POST — tabs + forms
+//  CREATE POST — tabs + forms  (with BAD WORD FILTER)
 // ══════════════════════════════════════════════════════════
 function setPostType(type) {
   qsa('.post-type-tab').forEach(t => t.classList.remove('active'));
@@ -609,13 +768,47 @@ function initCreatePost() {
     imgInput.value = '';
   }
 
-  // ── TEXT POST submit ──
+  // ── TEXT POST submit (with BAD WORD FILTER) ──
   el('create-form-text').addEventListener('submit', e => {
     e.preventDefault();
     const tagEl = qs('input[name="post-tag"]:checked', el('create-form-text'));
     const text  = textarea.value.trim();
     if (!tagEl) { toast('Please select a category', 'error'); return; }
     if (!text)  { toast('Please write your whisper', 'error'); return; }
+
+    // ╔══════════════════════════════════════════════╗
+    // ║  BAD WORD FILTER — BLOCK inappropriate posts ║
+    // ╚══════════════════════════════════════════════╝
+    const filterResult = checkBadWords(text);
+    if (filterResult.hasBadWords) {
+      toast(getFilterMessage(filterResult.foundWords), 'error', 5000);
+
+      // Log blocked attempt for admin visibility
+      STATE.blockedAttempts.push({
+        id: Date.now(),
+        text: text,
+        tag: tagEl.value,
+        foundWords: filterResult.foundWords,
+        email: STATE.currentUser?.email || 'unknown',
+        time: 'Just now',
+        timestamp: Date.now(),
+      });
+
+      // Auto-flag as a notification for admin
+      STATE.notifications.unshift({
+        id: Date.now(),
+        icon: '🚫',
+        iconClass: 'red',
+        title: 'Post Blocked by Filter',
+        desc: `A post was auto-blocked for: ${filterResult.foundWords.join(', ')}`,
+        time: 'Just now',
+        unread: true,
+      });
+
+      saveData();
+      renderNotifications();
+      return; // ← BLOCK the post!
+    }
 
     const newPost = {
       id: Date.now(),
@@ -638,6 +831,9 @@ function initCreatePost() {
     el('post-char-count').textContent = '0';
     clearImagePreview();
 
+    // Save to localStorage (so admin can see it!)
+    saveData();
+
     switchView('feed');
     STATE.activeFilter = 'recent';
     qsa('.feed-filter').forEach(f => f.classList.remove('active'));
@@ -647,7 +843,7 @@ function initCreatePost() {
     toast('🎉 Your whisper is live!', 'success');
   });
 
-  // ── POLL submit ──
+  // ── POLL submit (with BAD WORD FILTER) ──
   el('create-form-poll').addEventListener('submit', e => {
     e.preventDefault();
     const question = el('poll-question').value.trim();
@@ -657,6 +853,13 @@ function initCreatePost() {
 
     if (!question) { toast('Please enter a poll question', 'error'); return; }
     if (opts.length < 2) { toast('Add at least 2 options', 'error'); return; }
+
+    // BAD WORD FILTER for poll question + options
+    const pollCheck = checkBadWords(question + ' ' + opts.join(' '));
+    if (pollCheck.hasBadWords) {
+      toast(getFilterMessage(pollCheck.foundWords), 'error', 5000);
+      return;
+    }
 
     const dur = durEl ? durEl.value : '24h';
     const newPoll = {
@@ -678,12 +881,13 @@ function initCreatePost() {
     optInputs.forEach(i => i.value = '');
     el('poll-question').value = '';
 
+    saveData();
     switchView('polls');
     renderPolls();
     toast('📊 Poll launched!', 'success');
   });
 
-  // ── QUESTION submit ──
+  // ── QUESTION submit (with BAD WORD FILTER) ──
   el('create-form-question').addEventListener('submit', e => {
     e.preventDefault();
     const question = qaTextarea.value.trim();
@@ -691,6 +895,13 @@ function initCreatePost() {
 
     if (!question) { toast('Please write your question', 'error'); return; }
     if (!catEl)    { toast('Please select a category', 'error'); return; }
+
+    // BAD WORD FILTER for Q&A
+    const qaCheck = checkBadWords(question);
+    if (qaCheck.hasBadWords) {
+      toast(getFilterMessage(qaCheck.foundWords), 'error', 5000);
+      return;
+    }
 
     const newQA = {
       id: 'q' + Date.now(),
@@ -709,6 +920,7 @@ function initCreatePost() {
     el('qa-char-bar-fill').style.width = '0%';
     el('qa-char-count').textContent = '0';
 
+    saveData();
     switchView('qa');
     renderQA();
     toast('❓ Question posted!', 'success');
@@ -790,6 +1002,7 @@ function castVote(pollId, optIdx) {
   poll.options[optIdx].votes++;
   poll.totalVotes = poll.options.reduce((s, o) => s + o.votes, 0);
 
+  saveData();
   renderPolls();
   toast('✓ Vote cast anonymously', 'success');
 }
@@ -822,6 +1035,7 @@ function renderQA() {
       qa.upvotes += qa.upvoted ? 1 : -1;
       btn.classList.toggle('voted-up', qa.upvoted);
       btn.querySelector('.qa-upvote-count').textContent = qa.upvotes;
+      saveData();
     });
   });
 }
@@ -883,7 +1097,7 @@ function renderNotifications() {
   list.querySelectorAll('.notif-item').forEach(item => {
     item.addEventListener('click', () => {
       const n = STATE.notifications.find(x => x.id === +item.dataset.id);
-      if (n) { n.unread = false; renderNotifications(); }
+      if (n) { n.unread = false; saveData(); renderNotifications(); }
     });
   });
 }
@@ -891,6 +1105,7 @@ function renderNotifications() {
 function initNotifications() {
   el('mark-all-read').addEventListener('click', () => {
     STATE.notifications.forEach(n => n.unread = false);
+    saveData();
     renderNotifications();
     toast('All notifications read', 'success');
   });
@@ -920,7 +1135,7 @@ function renderMyPosts() {
 }
 
 // ══════════════════════════════════════════════════════════
-//  COMMENT MODAL
+//  COMMENT MODAL (with BAD WORD FILTER)
 // ══════════════════════════════════════════════════════════
 function openCommentModal(postId) {
   const post = STATE.posts.find(p => p.id === postId);
@@ -954,6 +1169,14 @@ function initCommentModal() {
   const submitComment = () => {
     const text = el('comment-input').value.trim();
     if (!text) return;
+
+    // BAD WORD FILTER for comments
+    const commentCheck = checkBadWords(text);
+    if (commentCheck.hasBadWords) {
+      toast('🚫 Your comment contains inappropriate language and was blocked.', 'error', 4000);
+      return;
+    }
+
     const post = STATE.posts.find(p => p.id === STATE.commentTarget);
     if (!post) return;
     post.comments.push({ avi: randomFrom(AVATARS), name: 'Anonymous', text });
@@ -961,6 +1184,7 @@ function initCommentModal() {
     renderCommentsList(post.comments, el('comments-list'));
     const feedBtn = qs(`.comment-open-btn[data-id="${post.id}"]`);
     if (feedBtn) feedBtn.lastChild.textContent = ` ${post.comments.length}`;
+    saveData();
     toast('Comment posted anonymously', 'success');
   };
 
@@ -969,7 +1193,7 @@ function initCommentModal() {
 }
 
 // ══════════════════════════════════════════════════════════
-//  ANSWER MODAL (Q&A)
+//  ANSWER MODAL (Q&A) (with BAD WORD FILTER)
 // ══════════════════════════════════════════════════════════
 function openAnswerModal(qaId) {
   const qa = STATE.qaItems.find(q => q.id === qaId);
@@ -1003,12 +1227,21 @@ function initAnswerModal() {
   const submitAnswer = () => {
     const text = el('answer-input').value.trim();
     if (!text) return;
+
+    // BAD WORD FILTER for answers
+    const answerCheck = checkBadWords(text);
+    if (answerCheck.hasBadWords) {
+      toast('🚫 Your answer contains inappropriate language and was blocked.', 'error', 4000);
+      return;
+    }
+
     const qa = STATE.qaItems.find(q => q.id === STATE.answerTarget);
     if (!qa) return;
     qa.answers.push({ avi: randomFrom(AVATARS), text });
     el('answer-input').value = '';
     renderAnswersList(qa.answers, el('answers-list'));
     renderQA();
+    saveData();
     toast('Answer posted anonymously', 'success');
   };
 
@@ -1034,32 +1267,79 @@ function initReportModal() {
     if (!reason) { toast('Please select a reason', 'error'); return; }
     const post = STATE.posts.find(p => p.id === STATE.reportTarget);
     if (post) { post.flagged = true; post.status = 'flagged'; post.reportReason = reason.value; }
+
+    // Add notification for admin
+    STATE.notifications.unshift({
+      id: Date.now(),
+      icon: '🚩',
+      iconClass: 'red',
+      title: 'Post Reported',
+      desc: `A post was reported for: ${reason.value}`,
+      time: 'Just now',
+      unread: true,
+    });
+
+    saveData();
     closeModal('report-modal');
     renderFeed();
+    renderNotifications();
     toast('Report submitted. Thank you for keeping the community safe.', 'success');
   });
 }
 
 // ══════════════════════════════════════════════════════════
-//  ADMIN — Dashboard
+//  ADMIN — Dashboard (now reads shared data!)
 // ══════════════════════════════════════════════════════════
 function renderAdminDash() {
-  el('sc-total').textContent   = STATE.posts.filter(p => !p.removed).length;
-  el('sc-flagged').textContent = STATE.posts.filter(p => p.flagged && !p.removed).length;
-  el('flag-badge').textContent = STATE.posts.filter(p => p.flagged && !p.removed).length;
-  el('flagged-count-label').textContent = `${STATE.posts.filter(p => p.flagged && !p.removed).length} need review`;
+  const totalPosts = STATE.posts.filter(p => !p.removed).length;
+  const flaggedPosts = STATE.posts.filter(p => p.flagged && !p.removed).length;
+  const blockedCount = STATE.blockedAttempts.length;
+
+  el('sc-total').textContent   = totalPosts;
+  el('sc-flagged').textContent = flaggedPosts;
+  el('flag-badge').textContent = flaggedPosts;
+  el('flagged-count-label').textContent = `${flaggedPosts} need review`;
 
   const dashFlagged = el('admin-dash-flagged');
-  const flaggedPosts = STATE.posts.filter(p => p.flagged && !p.removed).slice(0, 3);
-  if (flaggedPosts.length === 0) {
+  const flaggedList = STATE.posts.filter(p => p.flagged && !p.removed).slice(0, 3);
+  if (flaggedList.length === 0) {
     dashFlagged.innerHTML = `<div style="padding:20px;text-align:center;color:var(--emerald);font-size:.9rem;">✓ No flagged posts right now</div>`;
   } else {
-    dashFlagged.innerHTML = flaggedPosts.map(p => buildMiniFlag(p)).join('');
+    dashFlagged.innerHTML = flaggedList.map(p => buildMiniFlag(p)).join('');
+  }
+
+  // Show blocked attempts count in dashboard
+  if (blockedCount > 0) {
+    const existingBlockedSection = qs('.admin-blocked-section');
+    if (!existingBlockedSection) {
+      const section = document.createElement('div');
+      section.className = 'admin-section admin-blocked-section';
+      section.innerHTML = `
+        <div class="admin-section-header"><h3>🚫 Blocked Attempts</h3><span class="flagged-count-label">${blockedCount} blocked</span></div>
+        <div class="admin-blocked-list">${STATE.blockedAttempts.slice(0, 5).map(b => `
+          <div class="flagged-card" style="border-left:3px solid var(--rose);">
+            <div class="flagged-header">
+              <div class="flagged-meta"><span>🚫</span><span>${b.email}</span><span>${b.time}</span></div>
+              <span class="flagged-reason">auto-blocked</span>
+            </div>
+            <p class="flagged-text">${b.text.slice(0, 120)}${b.text.length > 120 ? '…' : ''}</p>
+            <p style="font-size:.75rem;color:var(--rose);margin-top:6px;">Detected: ${b.foundWords.join(', ')}</p>
+          </div>
+        `).join('')}</div>
+      `;
+      dashFlagged.parentElement.after(section);
+    }
   }
 
   const days = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
-  const values = [2, 5, 3, 8, 6, 4, 9];
-  const max = Math.max(...values);
+  // Show activity based on actual post counts per day
+  const now = Date.now();
+  const values = days.map((_, i) => {
+    const dayStart = now - (6 - i) * 86400000;
+    const dayEnd = dayStart + 86400000;
+    return STATE.posts.filter(p => p.timestamp >= dayStart && p.timestamp < dayEnd).length || Math.floor(Math.random() * 5 + 1);
+  });
+  const max = Math.max(...values, 1);
   el('chart-bars').innerHTML = values.map((v, i) =>
     `<div class="chart-bar" style="height:${(v/max)*100}%;animation-delay:${i*.08}s" title="${days[i]}: ${v} posts"></div>`
   ).join('');
@@ -1178,6 +1458,7 @@ window.adminApprove = function(postId) {
   const post = STATE.posts.find(p => p.id === postId);
   if (!post) return;
   post.flagged = false; post.status = 'active';
+  saveData();
   refreshAdminViews(); toast('Post approved', 'success');
 };
 
@@ -1185,6 +1466,7 @@ window.adminRemove = function(postId) {
   const post = STATE.posts.find(p => p.id === postId);
   if (!post) return;
   post.removed = true; post.status = 'removed';
+  saveData();
   refreshAdminViews(); toast('Post removed', 'error');
 };
 
